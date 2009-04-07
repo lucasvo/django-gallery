@@ -1,0 +1,18 @@
+{% extends 'gallery/base.html' %}
+{% load gallery_extras i18n cms_extras %}
+
+{% block contentwrapper %}<div class="leftcolumbg"><div>
+    <img alt="Galerie" src="/media/img/t_galerie.png" /><br />
+
+<h3>{{ album.name|escape }}</h1>
+<a href="../">{% trans "Zur&uuml;ck" %}</a>
+<p>{{ album.description|safe }}</p>
+<div class="album_objects">
+{% for object in objects %}
+<div class="album_object">
+<div class="container"><a href="{% get_absolute_url object %}">{{ object|resized_image:"admin" }}</a></div>
+</div>
+{% endfor %}
+<div class="clear"></div>
+</div></div></div>
+{% endblock %}

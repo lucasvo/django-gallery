@@ -1,0 +1,15 @@
+{% load gallery_extras %}
+
+<div id="slide_image_container" style="width:{{iwidth}};height:{{iheight}};{% if show_container %}display:block;{%endif%}">
+    {{ object|resized_image:image_size_str }}
+</div>
+
+<div id="slide_navigation" style="float:right;">
+{% if previous_page %}
+    <a class="slideshow-arrow-link" href="javascript:slide_show('{{previous_page}}', '{{album_id}}', '{{iwidth}}', '{{iheight}}');">&#139;</a>
+{% endif %}
+{% if next_page %}
+    &nbsp;&nbsp;<a class="slideshow-arrow-link" href="javascript:slide_show('{{next_page}}','{{album_id}}', '{{iwidth}}', '{{iheight}}');">&#155;</a>
+{% endif %}
+</div>
+<div id="slideshow-object-description">{{ object.description }}</div>

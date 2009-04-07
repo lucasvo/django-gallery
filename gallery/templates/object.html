@@ -1,0 +1,61 @@
+{% extends 'gallery/base.html' %}
+{% load gallery_extras i18n %}
+
+{% block contentwrapper %}<div class="leftcolumbg"><div>
+    <img alt="Galerie" src="/media/img/t_galerie.png" /><br />
+
+        {{ content }}
+<h2>{{ album.name|escape }}</h2>
+<a href="../">{% trans "Zur&uuml;ck zur &Uuml;bersicht" %}</a>
+<p id="img-navigation" class="nav"><a href="/{{ LANGUAGE_CODE }}{{ object.get_previous_url }}#img-navigation">&laquo; {% trans "Zur&uuml;ck" %}</a> | <a href="/{{ LANGUAGE_CODE }}{{ object.get_next_url }}#img-navigation">{% trans "Weiter" %} &raquo;</a> <span class="info">({{ object.position }} of {{ object.album.number_of_objects }})</p>
+<a href="{{ object.get_next_url }}#img-navigation">{{ object|resized_image:"371x41000" }}</a>
+{# <p><a href="|| object.get_original_url ||">Download original</a></p> #}
+
+<!-- preload next -->
+<div style="display:none;">{{ object.get_next|resized_image:"663x10000" }}</div>
+<!--
+{% comment %}
+{% load comments %}
+
+{% get_free_comment_list for gallery.object object.id as comment_list %}
+
+<h2 id="comments">{% trans "Comments" %}</h2>
+{% for comment in comment_list %}
+    <div class="comment_{% cycle odd,even %}" id="c{{ comment.id }}">
+        <span class="comnum"><a id="c{{ comment.id }}" href="#c{{ comment.id }}">#{{ forloop.counter }}</a></span>
+        <p><b>{{ comment.person_name|escape }}</b> commented, on {{ comment.submit_date|date:"F j, Y" }} at {{ comment.submit_date|date:"P" }}:</p>
+        {{ comment.comment|escape|urlizetrunc:40|linebreaks }}
+    </div>
+{% endfor %}
+{% endcomment %}
+
+{% if comment_list %}
+<h2 id="comments">Comments</h2>
+{% for comment in comment_list %}
+    <div class="comment_{% cycle odd,even %}" id="c{{ comment.id }}">
+        <span class="comnum"><a id="c{{ comment.id }}" href="#c{{ comment.id }}">#{{ forloop.counter }}</a></span>
+        <p>{% if comment.homepage %}<a href="{{ comment.homepage }}">{% endif %}<b>{{ comment.name|escape }}</b>{% if comment.homepage %}</a>{% endif %} commented, on {{ comment.date|date:"F j, Y" }} at {{ comment.date|date:"P" }}:</p>
+        {{ comment.text|escape|urlizetrunc:40|linebreaks }}
+    </div>
+{% endfor %}
+{% endif %}
+
+<h2>{% trans "Post a comment" %}</h2>
+
+{# {% free_comment_form for gallery.object object.id %} #}
+
+<form method="post" action="#comment-form" id="comment-form">
+{% for field in form %}
+<p>{{ field.label_tag }}<br />{{ field.errors }} {{ field }}</p>
+
+{% endfor %}
+
+<p><img src="/captcha/"></p>
+
+<p><br /><input type="submit" class="comment-submit" name="submit" value="{% trans "Submit" %}" /></p>
+</form>
+-->
+
+
+</div></div>
+{% endblock %}

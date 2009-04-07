@@ -1,0 +1,23 @@
+{% extends 'gallery/base.html' %}
+{% load gallery_extras i18n cms_extras %}
+
+
+{% block contentwrapper %}<div class="leftcolumbg"><div>
+    <img alt="Galerie" src="/media/img/t_galerie.png" /><br />
+<div class="albums">
+
+<table>
+{% for album in albums %}
+<tr><td colspan="2"><h3><a href="{% get_absolute_url album %}">{{ album.name|escape }}</a></h3></td></tr>
+<tr><td valign="top"><div class="album_object"><div class="container">
+    <a href="{% get_absolute_url album %}">{{ album.get_preview|resized_image:"200x200" }}</a>
+    </div></div></td>
+</tr>
+
+{% endfor %}
+</table>
+
+<div class="clear"></div>
+</div>
+</div></div>
+{% endblock %}

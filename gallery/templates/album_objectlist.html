@@ -1,0 +1,14 @@
+{% load i18n adminmedia gallery_extras %}
+{% if album.object_set.all %}
+{% for object in  album.object_set.all %}
+<div class="album_object{% ifequal object.id album.preview.id %} active{% endifequal %}">
+<div class="container" style="width:{{ admin_image_size.0 }}px; height:{{ admin_image_size.1 }}px;">{{ object|resized_image:"admin" }}</div>
+<a id="{{ object.id }}_delete_object" href="{{ object.id }}/delete/" class="delete_object deletelink">{% trans 'Delete' %}</a><br>
+<a id="{{ object.id }}_set_preview" href="{{ object.id }}/set_preview/" class="set_preview_object" >{% trans 'Set as preview' %}</a>
+<div class="object_description_container"><div id="{{ object.id }}_description" class="object_description">{% if object.description %}{{ object.description }}{% else %}<span>Edit description</span>{% endif %}</div></div>
+</div>
+{% endfor %}
+{% else %}
+<p>{% trans 'There are no pictures available.' %}</p>
+{% endif %}
+<div class="clear"></div>

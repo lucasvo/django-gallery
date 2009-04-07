@@ -1,0 +1,60 @@
+{% extends "admin/base_site.html" %}
+{% load i18n adminmedia gallery_extras %}
+        
+{% block extrahead %}{{ block.super }}
+<link rel="stylesheet" type="text/css" href="/media/gallery/admin.css" media="screen" />
+<script src="/media/gallery/mootools-release-1.11.js" type="text/javascript"></script>
+<script src="/media/gallery/Swiff.Base.js" type="text/javascript"></script>
+<script src="/media/gallery/Swiff.Uploader.js" type="text/javascript"></script>
+<script src="/media/gallery/FancyUpload.js" type="text/javascript"></script>
+<script src="/media/gallery/admin.js" type="text/javascript"></script>
+<!--<script src="/media/gallery/SWFUpload/SWFUpload.js" type="text/javascript"></script>
+<script src="/media/gallery/mootools-trunk-964-1.js" type="text/javascript"></script>-->
+{% endblock %}
+
+{% block stylesheet %}{% admin_media_prefix %}css/forms.css{% endblock %}
+
+{% block userlinks %}<a href="../../../doc/">{% trans 'Documentation' %}</a> / <a href="../../../password_change/">{% trans 'Change password' %}</a> / <a href="../../../logout/">{% trans 'Log out' %}</a>{% endblock %}
+{% block breadcrumbs %}{% if not is_popup %}
+<div class="breadcrumbs">
+     <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+     <a href="../">{% trans 'Albums' %}</a> &rsaquo;
+     {% if add %}{% trans "Add" %} {% trans 'album' %}{% else %}{{ album|truncatewords:"18"|escape }}{% endif %}
+</div>
+{% endif %}{% endblock %}
+
+{% block content %}
+<ul class="object-tools"><li><a href="../add/" class="addlink">{% trans 'Add album' %}</a></li></ul>
+
+<div id="content-main">
+  <form id="album-form" action="" method="post">
+    <fieldset class="module aligned">
+        {% for field in form %}
+        <div class="form-row">{{ field.errors }}<label {% if field.field.required %}class="required" {% endif %}for="id_{{ field.name }}">{{ field.label }}</label> {{ field }} <p class="help">{{ field.help_text }}</p></div>
+        {% endfor %}
+    </fieldset>
+{% include 'gallery/album_submit_row.html' %}
+  </form>
+
+{% if not add %}
+<h2>{% trans 'Upload pictures' %}</h2>
+<form action="upload/" method="post" enctype="multipart/form-data">
+    <input type="file" name="fileinput" id="fileinput" />
+    <ul class="queuelist" id="queuelist"></ul>
+    <input type="submit" value="Upload" />
+</form>
+
+<h2>{% trans 'Pictures' %}</h2>
+<div id="objectlist" class="objectlist">
+</div>
+{% endif %}
+</div>
+
+{% if add %}
+<script type="text/javascript">
+document.getElementById('id_name').focus();
+</script>
+{% endif %}
+
+
+{% endblock %}

@@ -1,0 +1,23 @@
+
+p.nav { margin-top:0.8em; }
+a img { border:0px; }
+.albums { margin-top:1em; }
+.album { border:1px solid #ccc; float:left; margin:0 0.5em 0.5em 0; background-color:#ccc; }
+.album:hover { border:1px solid #69c; background-color:#def; }
+.album:hover img { opacity:0.9; }
+.album:hover a { color:#000; }
+.album a { text-decoration:none; font-weight:bold; color:#333; font-size:0.9em; }
+.album span { display:block; margin:0 0.4em 0.4em 0.4em; }
+
+.album_object { border:1px solid #333; padding:3px; margin:4px; }
+.album_object:hover { border:2px solid #999; padding:2px; margin:4px; }
+.album_object.active { border:2px solid #c33; padding:2px; }
+.album_object { float:left; }
+.album_object img { /*display:block;*/ }
+.album_object .container { overflow:hidden; }
+
+.clear { clear:both; }
+
+span.info { padding-left:1em; font-size:0.8em; color:#666; }
+
+hr { height:1px; background-color:#666; border:0; margin-top:1em;}
