@@ -1,6 +1,8 @@
 from gallery.config import ADMIN_IMAGE_SIZE
 from gallery import models
+
 import installation_settings
+
 def get_random_image():
     """
     Returns a random image or returns an empty variable

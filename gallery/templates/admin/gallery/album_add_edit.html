@@ -1,0 +1,159 @@
+{% extends "admin/base_site.html" %}
+{% load i18n adminmedia gallery_extras %}
+
+      
+{% block extrahead %}{{ block.super }}
+<link rel="stylesheet" type="text/css" href="/media/admin/css/forms.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="/media/gallery/thickbox.css" media="screen" />
+
+<style type="text/css">
+#upload-box {
+    display:none;
+}
+ul.uploads { padding:0px; }
+
+ul.uploads li { 
+    list-style-type:none;
+    background-color:#f0f0f0;
+    margin:4px 0;
+    padding:7px;
+    width:214px;
+    }
+
+.progressbar {
+    width:200px; 
+    padding:0;
+    border:1px solid black;
+    height:.75em;
+    margin-bottom:5px;
+}
+.progressbar div { 
+    background-color: orange; 
+    font-size: 1pt;
+    height:100%;
+    float:left;
+    width:0px; 
+    display:block; 
+}
+.completed .progressbar div { 
+    background-color:green; 
+    }
+.swfupload {
+		position: absolute;
+		z-index: 1;
+	}
+</style>
+{% endblock %}
+
+{% block extrascript %}
+<script src="/media/js/jquery/jquery-1.3.1.min.js"></script>
+<script src="/media/gallery/SWFUpload/swfupload.js"></script>
+<script src="/media/gallery/SWFUpload/plugins/swfupload.queue.js"></script>
+<script src="/media/gallery/jquery-swfupload-handlers.js"></script>
+<script src="/media/gallery/jquery-swfupload-fileprogress.js"></script>
+<script src="/media/gallery/jquery-swfupload.js"></script>
+<script src="/media/gallery/jquery-thickbox.min.js"></script>
+
+<script>
+
+// Send debug 
+function debug_console (message) {
+console.log(message);
+}
+
+    $(function() {
+        $("#spanButtonPlaceholder").makeSWFUploader({
+            // File Settings
+            upload_url: "/admin/gallery/album/{{ album.id }}/upload/{{ sessionid }}/", 
+            file_size_limit : "10 MB",
+			file_types : "*.jpg; *.jpeg; *.png; *.tif; *.gif",
+			file_types_description : "{% trans "All Images" %}",
+			file_upload_limit : 1000,
+			file_queue_limit : 100,
+            
+            button_placeholder_id : "spanButtonPlaceholder",
+            
+            {% comment %}
+            button_image_url: '/media/gallery/blankButton.png',
+            button_text: '<span class="choose_files_button">{% trans "Choose files" %}</span>',
+            button_text_style: '.choose_files_button { \
+                font-family:"Lucida Grande",Verdana,Arial,sans-serif; \
+                font-size:11px; \
+                font-weight:normal; \
+                }',
+            {% endcomment %}
+            button_width: 69,
+            button_height: 29,
+
+		    button_text: '',
+		    button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
+		    button_cursor: SWFUpload.CURSOR.HAND,    
+                
+                
+		    custom_settings : {
+					progressTarget : "upload-list",
+					cancelButtonId : "btnCancel"
+				},
+				
+					minimum_flash_version : "9.0.28",
+			
+		    debug:false,
+		    debug_handler: debug_console,
+
+        });
+    });        
+</script>
+
+{% endblock %}
+
+{% comment %}{% block stylesheet %}{% admin_media_prefix %}css/.css{% endblock %}{% endcomment %}
+
+{% block userlinks %}<a href="../../../doc/">{% trans 'Documentation' %}</a> / <a href="../../../password_change/">{% trans 'Change password' %}</a> / <a href="../../../logout/">{% trans 'Log out' %}</a>{% endblock %}
+{% block breadcrumbs %}{% if not is_popup %}
+<div class="breadcrumbs">
+     <a href="../../../">{% trans "Home" %}</a> &rsaquo;
+     <a href="../">{% trans 'Albums' %}</a> &rsaquo;
+     {% if add %}{% trans "Add" %} {% trans 'album' %}{% else %}{{ album|truncatewords:"18"|escape }}{% endif %}
+</div>
+{% endif %}{% endblock %}
+
+{% block content %}
+<ul class="object-tools"><li><a href="../add/" class="addlink">{% trans 'Add album' %}</a></li></ul>
+
+<div id="content-main">
+  <form id="album-form" action="" method="post">
+    <fieldset class="module aligned">
+        {% for field in form %}
+        <div class="form-row">{{ field.errors }}<label {% if field.field.required %}class="required" {% endif %}for="id_{{ field.name }}">{{ field.label }}</label> {{ field }} <p class="help">{{ field.help_text }}</p></div>
+        {% endfor %}
+    </fieldset>
+  {% include 'admin/gallery/album_submit_row.html' %}
+  </form>
+
+{% if not add %}
+<input alt="#TB_inline?height=500&width=400&inlineId=upload-box" title="Upload Images" class="thickbox" type="button" value="Upload Images" />  
+<div id="upload-box">
+<h2>{% trans 'Upload pictures' %}</h2>
+<ul class="uploads" id="upload-list">
+
+</ul>
+
+<span id="spanButtonPlaceholder"></span>
+<input id="select_files" type="button" value="{% trans "Select files" %}" style="margin-left: 2px; font-size: 8pt; height: 29px;" />
+<input id="btnCancel" type="button" value="{% trans "Cancel All Uploads" %}" disabled="disabled" style="margin-left: 2px; font-size: 8pt; height: 29px;" />
+</div>
+
+<h2>{% trans 'Pictures' %}</h2>
+<div id="objectlist" class="objectlist">
+</div>
+{% endif %}
+</div>
+
+{% if add %}
+<script type="text/javascript">
+document.getElementById('id_name').focus();
+</script>
+{% endif %}
+
+
+{% endblock %}
