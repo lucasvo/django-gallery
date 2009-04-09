@@ -1,17 +1,23 @@
-from gallery.models import Album
-from gallery.models import Object
-from gallery.models import Comment
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext, Template, Context, loader
-from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseForbidden, HttpResponseNotAllowed
 from django.conf import settings
 from django.utils.encoding import smart_unicode
 from django.utils.translation import ugettext as _
 from django import forms
+from django.core.files import File
+
+from PIL import Image
+import cStringIO
 
 from django.conf.urls.defaults import *
 
 from django.contrib import admin
+
+from gallery.models import Album
+from gallery.models import Object
+from gallery.models import Comment
+from gallery.settings import *
 
 class AlbumForm(forms.ModelForm):
     description = forms.CharField(required=False, widget=forms.Textarea(attrs={'rows': 4, 'cols': 60}))
@@ -26,9 +32,10 @@ class AlbumAdmin(admin.ModelAdmin):
     def get_urls(self):
         urls = super(AlbumAdmin, self).get_urls()
         album_urls = patterns('',
+            (r'add/$', self.admin_site.admin_view(self.album_add_edit)),
             (r'([0-9]+)/$', self.admin_site.admin_view(self.album_add_edit)),
             (r'([0-9]+)/objectlist/$', self.admin_site.admin_view(self.album_objectlist)),
-            (r'([0-9]+)/upload/(([\w]+)/$|$)', self.album_upload),
+            (r'([0-9]+)/upload/$', self.album_upload),
             (r'([0-9]+)/set_preview/$', self.admin_site.admin_view(self.album_object_set_preview)),
             (r'([0-9]+)/set_description/$', self.admin_site.admin_view(self.album_object_set_description)),
             (r'([0-9]+)/([0-9]+)/delete/$', self.admin_site.admin_view(self.album_object_delete)),
@@ -57,7 +64,7 @@ class AlbumAdmin(admin.ModelAdmin):
             if form.is_valid():
                 album = form.save()
                 return HttpResponseRedirect('../%d/' % album.id)
-        print request.COOKIES['sessionid']
+                        
         return render_to_response('admin/gallery/album_add_edit.html', {
                 'title':'%s %s' % (add and _('Add') or _('Edit'), _('album')),            
                 'album': album,
@@ -75,8 +82,13 @@ class AlbumAdmin(admin.ModelAdmin):
             'album': album,
         }, context_instance=RequestContext(request))
         
-    def album_upload(self, request, id=None, sessionid=None):
+    def album_upload(self, request, id=None):
         album = get_object_or_404(Album, pk=id)
+
+        if request.GET.get('ssid'):
+            sessionid = request.GET['ssid']
+        else: 
+            return HttpResponseForbidden()
         
         if sessionid:
             # We are getting the session id in the URL, so we can't just use request.user
@@ -96,28 +108,37 @@ class AlbumAdmin(admin.ModelAdmin):
             return HttpResponseForbidden()
     
         # Finally handle the upload
-        filedata = request.FILES['fileinput']
-        #print "file size", filedata.size
+        filedata = request.FILES['Filedata']
+
         if filedata.size > MAX_FILE_SIZE:
-            return HttpResponse(str(e), status=400)
-    
+            return HttpResponseNotAllowed("Image too big")
+                
         # Check if it's an image
+        image_content = cStringIO.StringIO()
+
+        for chunk in filedata.chunks():
+            #print dir(image_content)
+            image_content.write(chunk)
+            image_content.seek(0)
         try:
-            img = Image.open(StringIO(filedata['content']))
+            img = Image.open(image_content)
         except Exception, e:
-            return HttpResponse(str(e), status=401)
-    
+            return HttpResponseNotAllowed(str(e))
+            
         if img.size[0] > MAX_IMAGE_SIZE[0] or img.size[1] > MAX_IMAGE_SIZE[1]:
-            return HttpResponse(str(e), status=416)
-    
+            return HttpResponseNotAllowed(str("Image too big"))
+
         # Save it
         object = Object(
                 album=album,
                 type='p',
-                name=filedata['filename'],
+                name=str(filedata),
             )
-        object.save_original_file(filedata['filename'], filedata['content'])
-    
+        
+        object.original.save(str(filedata), filedata, save=True)
+        
+        object.save()
+
         return HttpResponse('OK')
         
     def get_album_and_object(self,album_id, object_id):

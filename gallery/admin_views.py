@@ -89,15 +89,18 @@ def album_upload(request, id, sessionid=None):
         return HttpResponse(str(e), status=401)
 
     if img.size[0] > MAX_IMAGE_SIZE[0] or img.size[1] > MAX_IMAGE_SIZE[1]:
-        return HttpResponse(str(e), status=416)
+        return HttpResponseNotAllowed("Image too big.")
 
     # Save it
     object = models.Object(
             album=album,
             type='p',
-            name=filedata['filename'],
+            name=str(filedata),
         )
-    object.save_original_file(filedata['filename'], filedata['content'])
+    try:
+        object.save_original_file(filedata['filename'], filedata['content'])
+    except Exception, e:
+        print e
 
     return HttpResponse('OK')
 

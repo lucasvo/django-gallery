@@ -42,6 +42,9 @@ ul.uploads li {
 		position: absolute;
 		z-index: 1;
 	}
+#TB_closeAjaxWindow { 
+    display:none;
+}
 </style>
 {% endblock %}
 
@@ -60,11 +63,11 @@ ul.uploads li {
 function debug_console (message) {
 console.log(message);
 }
-
+ 
     $(function() {
         $("#spanButtonPlaceholder").makeSWFUploader({
             // File Settings
-            upload_url: "/admin/gallery/album/{{ album.id }}/upload/{{ sessionid }}/", 
+            upload_url: "/admin/gallery/album/{{ album.id }}/upload/?ssid={{ sessionid }}", 
             file_size_limit : "10 MB",
 			file_types : "*.jpg; *.jpeg; *.png; *.tif; *.gif",
 			file_types_description : "{% trans "All Images" %}",
@@ -83,7 +86,7 @@ console.log(message);
                 }',
             {% endcomment %}
             button_width: 69,
-            button_height: 29,
+            button_height: 30,
 
 		    button_text: '',
 		    button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
@@ -95,8 +98,8 @@ console.log(message);
 					cancelButtonId : "btnCancel"
 				},
 				
-					minimum_flash_version : "9.0.28",
-			
+			minimum_flash_version : "9.0.28",
+		
 		    debug:false,
 		    debug_handler: debug_console,
 
@@ -139,8 +142,10 @@ console.log(message);
 </ul>
 
 <span id="spanButtonPlaceholder"></span>
-<input id="select_files" type="button" value="{% trans "Select files" %}" style="margin-left: 2px; font-size: 8pt; height: 29px;" />
+<input id="select_files" type="button" value="{% trans "Select files" %}" style="margin-left: 0px; font-size: 8pt; height: 29px;" />
 <input id="btnCancel" type="button" value="{% trans "Cancel All Uploads" %}" disabled="disabled" style="margin-left: 2px; font-size: 8pt; height: 29px;" />
+<input id="TB_closeWindowButton" type="button" value="{% trans "Close window" %}" disabled="disabled" style="margin-left: 2px; font-size: 8pt; height: 29px;" />
+
 </div>
 
 <h2>{% trans 'Pictures' %}</h2>
