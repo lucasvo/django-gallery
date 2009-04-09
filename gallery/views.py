@@ -182,8 +182,8 @@ def calculate_size(size, boundaries, f=min):
     return (int(size[0]*scale), int(size[1]*scale))
 
 def thumbnail_exists(object, boundaries):
-    filename = object.get_original_filename()
-    basename = os.path.basename(filename)
+    filename = object.original.path
+    basename = os.path.basename(object.original.name)
     output_filename = get_file_path(basename, boundaries)
 
     if os.path.exists(output_filename):
@@ -202,8 +202,7 @@ def generate_thumbnail(request, album_id, object_id, w, h):
         return HttpResponseRedirect(url)
     else:
         # XXX: Duplicate code
-        filename = object.get_original_filename()
-        basename = os.path.basename(filename)
+        basename = os.path.basename(object.original.name)
         output_filename = get_file_path(basename, boundaries)
 
     image = object.open()

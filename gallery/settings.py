@@ -1,7 +1,12 @@
 # Gallery Settings
 
-# Maximum File Size in Bytes
-MAX_FILE_SIZE = 10000000
-
-# Maximum width and height of the image
-MAX_IMAGE_SIZE = ['3000', '3000']
+# Image sizes to generate automatically. Must be sorted.
+IMAGE_SIZES = (
+        (192, 192),
+        (256, 256),
+        (800, 800),
+    )
+    
+MAX_FILE_SIZE = 10 * 1024*1024
+MAX_IMAGE_SIZE = (4096, 4096)
+ADMIN_IMAGE_SIZE = (128, 128)

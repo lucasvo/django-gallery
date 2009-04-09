@@ -123,8 +123,7 @@ class Object(models.Model):
 
     def open(self, rotate=True):
         import Image
-        filename = self.get_original_filename()
-        image = Image.open(filename)
+        image = Image.open(self.original.path)
 
         if rotate:
             # Try to respect EXIF rotation
@@ -206,7 +205,7 @@ class Object(models.Model):
         from views import calculate_size, thumbnail_exists
         real_size = calculate_size(self.get_size(), size)
         if real_size[0] >= self.width and real_size[1] >= self.height:
-            return self.get_original_url()
+            return self.original.url
         for ts in IMAGE_SIZES:
             if real_size[0] <= ts[0] and real_size[1] <= ts[1]:
                 url = thumbnail_exists(self, ts)
@@ -220,10 +219,10 @@ class Object(models.Model):
 
     def delete(self):
         # Delete any thumbnails, if they exist.
+        # TODO: Better implementation
         folder_re = re.compile('size_[0-9]+x[0-9]')
         dirs = [d for d in os.listdir(os.path.join(settings.MEDIA_ROOT, 'gallery')) if folder_re.match(d)]
-        filename = self.get_original_filename()
-        basename = os.path.basename(filename)
+        basename = os.path.basename(self.original.name)
         for d in dirs:
             name = os.path.join(settings.MEDIA_ROOT, 'gallery', d, basename)
             if os.path.exists(name):

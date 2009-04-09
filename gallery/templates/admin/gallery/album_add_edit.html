@@ -55,8 +55,7 @@ ul.uploads li {
 <script src="/media/gallery/jquery-swfupload-handlers.js"></script>
 <script src="/media/gallery/jquery-swfupload-fileprogress.js"></script>
 <script src="/media/gallery/jquery-swfupload.js"></script>
-<script src="/media/gallery/jquery-thickbox.min.js"></script>
-
+<script src="/media/gallery/thickbox.js"></script> {# TODO: Pack javascript #}
 <script>
 
 // Send debug 
@@ -64,6 +63,83 @@ function debug_console (message) {
 console.log(message);
 }
  
+ 
+/* 
+function gallery_objectlist_refresh()
+{
+    new XHR({ method: 'get', onSuccess: function(d) {
+        $('objectlist').setHTML(d);
+        $$('.delete_object').addEvent('click', function(ev) {
+            ev = new Event(ev);
+            var el = ev.target;
+            var id = el.getAttribute('id').toInt();
+            new XHR({ method: 'get', onSuccess: function() {
+                el.getParent().remove();
+            }}).send(id+'/delete/');
+            ev.stop();
+        });
+        $$('.set_preview_object').addEvent('click', function(ev) {
+            ev = new Event(ev);
+            var el = ev.target;
+            var id = el.getAttribute('id').toInt();
+            new XHR({ method: 'get', onSuccess: function() {
+                gallery_objectlist_refresh();
+            }}).send(id+'/set_preview/');
+            ev.stop();
+        });
+        $$('.object_description').each(function(el) {
+            el.addEvent('click', function() {
+                var value = el.getElement('span') ? '' : el.getText();
+                var input = new Element('input', { 'value': value });
+                var id = el.getAttribute('id').toInt();
+                el.removeEvents();
+                el.setHTML('');
+                el.adopt(input);
+                input.focus();
+                input.select();
+                var save = function() {
+                    if (input._saving) return;
+                    input._saving = true;
+                    input.setAttribute('disabled', 'disabled');
+                    var value = input.getValue();
+                    new XHR({ method: 'post', onSuccess: function() {
+                            gallery_objectlist_refresh();
+                        }}).send(id+'/set_description/', 'description='+encodeURIComponent(value));
+                }
+                input.addEvent('change', function() { save(); });
+                input.addEvent('blur', function() { save(); });
+            });
+        });
+    }}).send('objectlist/');
+}
+
+window.addEvent('domready', function(){
+    new GalleryUpload($('fileinput'), {
+        url: location.href+'upload/'+Cookie.get('sessionid')+'/',
+        queueList: 'queuelist',
+        onError: function(name, size) {
+            var index = this.findFile(name, size);
+            this.fileList[index].fx.element.style.color = '#900';
+        },
+        onComplete: function() {
+            gallery_objectlist_refresh();
+        }
+    });
+
+    gallery_objectlist_refresh();
+
+});
+*/
+function reload_imgs() {
+{% if not add %}
+$("#objectlist").load('{% url album_object_list album.id %}', function () {
+{% endif %}
+});
+}
+{% if not add %}$(window).ready(function () { reload_imgs(); });{% endif %}
+
+var tb_remove_callback = reload_imgs;
+
     $(function() {
         $("#spanButtonPlaceholder").makeSWFUploader({
             // File Settings
@@ -144,7 +220,7 @@ console.log(message);
 <span id="spanButtonPlaceholder"></span>
 <input id="select_files" type="button" value="{% trans "Select files" %}" style="margin-left: 0px; font-size: 8pt; height: 29px;" />
 <input id="btnCancel" type="button" value="{% trans "Cancel All Uploads" %}" disabled="disabled" style="margin-left: 2px; font-size: 8pt; height: 29px;" />
-<input id="TB_closeWindowButton" type="button" value="{% trans "Close window" %}" disabled="disabled" style="margin-left: 2px; font-size: 8pt; height: 29px;" />
+<input id="TB_closeWindowButton" type="button" value="{% trans "Close window" %}" style="margin-left: 2px; font-size: 8pt; height: 29px;" />
 
 </div>
 

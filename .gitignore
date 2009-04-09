@@ -1,3 +1,4 @@
 gallery/media/gallery/originals/*
+gallery/media/gallery/size_*/
 *.swp
 *.pyc

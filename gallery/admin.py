@@ -34,7 +34,7 @@ class AlbumAdmin(admin.ModelAdmin):
         album_urls = patterns('',
             (r'add/$', self.admin_site.admin_view(self.album_add_edit)),
             (r'([0-9]+)/$', self.admin_site.admin_view(self.album_add_edit)),
-            (r'([0-9]+)/objectlist/$', self.admin_site.admin_view(self.album_objectlist)),
+            url(r'([0-9]+)/objectlist/$', self.admin_site.admin_view(self.album_objectlist), name="album_object_list"),
             (r'([0-9]+)/upload/$', self.album_upload),
             (r'([0-9]+)/set_preview/$', self.admin_site.admin_view(self.album_object_set_preview)),
             (r'([0-9]+)/set_description/$', self.admin_site.admin_view(self.album_object_set_description)),

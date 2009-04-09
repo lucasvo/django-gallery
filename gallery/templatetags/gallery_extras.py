@@ -2,7 +2,7 @@ from django.template import Library
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
-from gallery.config import ADMIN_IMAGE_SIZE
+from gallery.settings import ADMIN_IMAGE_SIZE
 from gallery.views import calculate_size
 
 
