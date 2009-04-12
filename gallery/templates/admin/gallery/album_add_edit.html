@@ -1,10 +1,9 @@
 {% extends "admin/base_site.html" %}
 {% load i18n adminmedia gallery_extras %}
 
-      
 {% block extrahead %}{{ block.super }}
 <link rel="stylesheet" type="text/css" href="/media/admin/css/forms.css" media="screen" />
-<link rel="stylesheet" type="text/css" href="/media/gallery/thickbox.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="/media/gallery/css/thickbox.css" media="screen" />
 
 <style type="text/css">
 #upload-box {
@@ -42,156 +41,159 @@ ul.uploads li {
 		position: absolute;
 		z-index: 1;
 	}
+.objectlist {
+    border:1px solid #cccccc;
+    padding:0.5em;
+}
+.album_object {
+    float:left;
+    border:1px solid #CCCCCC;
+    margin:4px;
+    padding:3px;
+    width:128px;
+    height:128px;
+    background-color:#fff;
+}
+.album_object .container {
+    /*float:left;*/
+    position:absolute;
+    height:128px;
+    width:128px;
+    overflow:hidden;
+}
 #TB_closeAjaxWindow { 
     display:none;
 }
+.toolbar {
+    position:absolute;
+    background:transparent url(/media/gallery/img/toolbar_bg.png);
+    display:none;
+    width:122px;
+    height:17px;
+    margin-top:105px;
+    padding:3px;
+}
+.toolbar a {}
+.object_actions { display:none; }
 </style>
 {% endblock %}
 
 {% block extrascript %}
-<script src="/media/js/jquery/jquery-1.3.1.min.js"></script>
+<script src="/media/gallery/js/jquery-1.3.2.min.js"></script>
 <script src="/media/gallery/SWFUpload/swfupload.js"></script>
 <script src="/media/gallery/SWFUpload/plugins/swfupload.queue.js"></script>
-<script src="/media/gallery/jquery-swfupload-handlers.js"></script>
-<script src="/media/gallery/jquery-swfupload-fileprogress.js"></script>
-<script src="/media/gallery/jquery-swfupload.js"></script>
-<script src="/media/gallery/thickbox.js"></script> {# TODO: Pack javascript #}
+<script src="/media/gallery/js/jquery-swfupload-handlers.js"></script>
+<script src="/media/gallery/js/jquery-swfupload-fileprogress.js"></script>
+<script src="/media/gallery/js/jquery-swfupload.js"></script>
+<script src="/media/gallery/js/thickbox.js"></script> {# TODO: Pack javascript #}
+<script src="/media/gallery/js/jquery-ui-1.7.1.custom.min.js"></script>
 <script>
+$(function() {
+    $("#spanButtonPlaceholder").makeSWFUploader({
+        // File Settings
+        upload_url: "/admin/gallery/album/{{ album.id }}/upload/?ssid={{ sessionid }}", 
+        file_size_limit : "10 MB",
+        file_types : "*.jpg; *.jpeg; *.png; *.tif; *.gif",
+		file_types_description : "{% trans "All Images" %}",
+		file_upload_limit : 1000,
+		file_queue_limit : 100,
+           
+        button_placeholder_id : "spanButtonPlaceholder",
+        button_width: 69,
+        button_height: 30,
+		button_text: '',
+		button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
+		button_cursor: SWFUpload.CURSOR.HAND,    
+        
+		custom_settings : {
+			progressTarget : "upload-list",
+			cancelButtonId : "btnCancel"
+			},
+				
+		minimum_flash_version : "9.0.28",
+		
+		debug:false,
+		debug_handler: debug_console,
+
+        });
+});  
 
 // Send debug 
 function debug_console (message) {
-console.log(message);
+//    console.log(message);
 }
  
- 
-/* 
-function gallery_objectlist_refresh()
-{
-    new XHR({ method: 'get', onSuccess: function(d) {
-        $('objectlist').setHTML(d);
-        $$('.delete_object').addEvent('click', function(ev) {
-            ev = new Event(ev);
-            var el = ev.target;
-            var id = el.getAttribute('id').toInt();
-            new XHR({ method: 'get', onSuccess: function() {
-                el.getParent().remove();
-            }}).send(id+'/delete/');
-            ev.stop();
-        });
-        $$('.set_preview_object').addEvent('click', function(ev) {
-            ev = new Event(ev);
-            var el = ev.target;
-            var id = el.getAttribute('id').toInt();
-            new XHR({ method: 'get', onSuccess: function() {
-                gallery_objectlist_refresh();
-            }}).send(id+'/set_preview/');
-            ev.stop();
-        });
-        $$('.object_description').each(function(el) {
-            el.addEvent('click', function() {
-                var value = el.getElement('span') ? '' : el.getText();
-                var input = new Element('input', { 'value': value });
-                var id = el.getAttribute('id').toInt();
-                el.removeEvents();
-                el.setHTML('');
-                el.adopt(input);
-                input.focus();
-                input.select();
-                var save = function() {
-                    if (input._saving) return;
-                    input._saving = true;
-                    input.setAttribute('disabled', 'disabled');
-                    var value = input.getValue();
-                    new XHR({ method: 'post', onSuccess: function() {
-                            gallery_objectlist_refresh();
-                        }}).send(id+'/set_description/', 'description='+encodeURIComponent(value));
-                }
-                input.addEvent('change', function() { save(); });
-                input.addEvent('blur', function() { save(); });
-            });
-        });
-    }}).send('objectlist/');
-}
-
-window.addEvent('domready', function(){
-    new GalleryUpload($('fileinput'), {
-        url: location.href+'upload/'+Cookie.get('sessionid')+'/',
-        queueList: 'queuelist',
-        onError: function(name, size) {
-            var index = this.findFile(name, size);
-            this.fileList[index].fx.element.style.color = '#900';
-        },
-        onComplete: function() {
-            gallery_objectlist_refresh();
-        }
-    });
-
-    gallery_objectlist_refresh();
-
-});
-*/
 function reload_imgs() {
 {% if not add %}
-$("#objectlist").load('{% url album_object_list album.id %}', function () {
-{% endif %}
-});
-}
-{% if not add %}$(window).ready(function () { reload_imgs(); });{% endif %}
-
-var tb_remove_callback = reload_imgs;
-
-    $(function() {
-        $("#spanButtonPlaceholder").makeSWFUploader({
-            // File Settings
-            upload_url: "/admin/gallery/album/{{ album.id }}/upload/?ssid={{ sessionid }}", 
-            file_size_limit : "10 MB",
-			file_types : "*.jpg; *.jpeg; *.png; *.tif; *.gif",
-			file_types_description : "{% trans "All Images" %}",
-			file_upload_limit : 1000,
-			file_queue_limit : 100,
-            
-            button_placeholder_id : "spanButtonPlaceholder",
-            
-            {% comment %}
-            button_image_url: '/media/gallery/blankButton.png',
-            button_text: '<span class="choose_files_button">{% trans "Choose files" %}</span>',
-            button_text_style: '.choose_files_button { \
-                font-family:"Lucida Grande",Verdana,Arial,sans-serif; \
-                font-size:11px; \
-                font-weight:normal; \
-                }',
-            {% endcomment %}
-            button_width: 69,
-            button_height: 30,
-
-		    button_text: '',
-		    button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
-		    button_cursor: SWFUpload.CURSOR.HAND,    
+    $("#objectlist").load('{% url album_object_list album.id %}', function () {
+    
+	    // Initialize Thickbox
+	    tb_init('a.thickbox, area.thickbox, input.thickbox');    
+	    $(".TB_closeWindowButton").click(tb_remove);
+	    
+	    // Enable the Toolbar for the images
+        $(".album_object").hover(
+            function () {
+                $(this).children(".toolbar").css("display", "block");
+            }, 
+            function () {
+                $(this).children(".toolbar").css("display", "none");
+            });
+        $(".delete-link").click(function () {
+            if(confirm("{% trans "Are you sure you want to delete this image?" %}")) {
+                return true;
+            } else {
+                return false;
+            }
+            });
+        $(".submit_object_infos").click(function () {
+            id = $(this).parents(".object_info_form").attr("id").split("_", 1)[0];
+            url = '/admin/gallery/album/{{ album.id }}/'+id+'/';
+            post = {
+                name :      $("#id_object_"+id+"_name").val(),
+                caption :   $("#id_object_"+id+"_caption").val(),
+                preview :   $("#id_object_"+id+"_preview").val(),
+                }
                 
-                
-		    custom_settings : {
-					progressTarget : "upload-list",
-					cancelButtonId : "btnCancel"
-				},
-				
-			minimum_flash_version : "9.0.28",
-		
-		    debug:false,
-		    debug_handler: debug_console,
-
+            console.log($("#id_object_"+id+"_preview").val());
+            $.post(url, post, tb_remove, "html");
+            return false;
         });
-    });        
+        
+        // Make the object list sortable
+        $("#objectlist").sortable({
+            stop: function(i) {
+                $.ajax({
+                    type: "POST",
+                    url: "/admin/gallery/album/{{ album.id }}/reorder/",
+                    data: $("#objectlist").sortable("serialize")
+                });
+          },
+     });        
+        
+});    
+{% endif %}
+}
+
+$(document).ready(function () {
+    {% if not add %}reload_imgs();{% endif %}
+});
+
+var tb_remove_callback = function () {
+reload_imgs();
+$("#upload-list").empty();
+};
+
 </script>
 
 {% endblock %}
-
-{% comment %}{% block stylesheet %}{% admin_media_prefix %}css/.css{% endblock %}{% endcomment %}
 
 {% block userlinks %}<a href="../../../doc/">{% trans 'Documentation' %}</a> / <a href="../../../password_change/">{% trans 'Change password' %}</a> / <a href="../../../logout/">{% trans 'Log out' %}</a>{% endblock %}
 {% block breadcrumbs %}{% if not is_popup %}
 <div class="breadcrumbs">
      <a href="../../../">{% trans "Home" %}</a> &rsaquo;
-     <a href="../">{% trans 'Albums' %}</a> &rsaquo;
+     <a href="../../">{% trans "Gallery" %}</a> &rsaquo;
+     <a href="../">{% trans "Album" %}</a> &rsaquo;
      {% if add %}{% trans "Add" %} {% trans 'album' %}{% else %}{{ album|truncatewords:"18"|escape }}{% endif %}
 </div>
 {% endif %}{% endblock %}
