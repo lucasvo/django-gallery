@@ -4,78 +4,7 @@
 {% block extrahead %}{{ block.super }}
 <link rel="stylesheet" type="text/css" href="/media/admin/css/forms.css" media="screen" />
 <link rel="stylesheet" type="text/css" href="/media/gallery/css/thickbox.css" media="screen" />
-
-<style type="text/css">
-#upload-box {
-    display:none;
-}
-ul.uploads { padding:0px; }
-
-ul.uploads li { 
-    list-style-type:none;
-    background-color:#f0f0f0;
-    margin:4px 0;
-    padding:7px;
-    width:214px;
-    }
-
-.progressbar {
-    width:200px; 
-    padding:0;
-    border:1px solid black;
-    height:.75em;
-    margin-bottom:5px;
-}
-.progressbar div { 
-    background-color: orange; 
-    font-size: 1pt;
-    height:100%;
-    float:left;
-    width:0px; 
-    display:block; 
-}
-.completed .progressbar div { 
-    background-color:green; 
-    }
-.swfupload {
-		position: absolute;
-		z-index: 1;
-	}
-.objectlist {
-    border:1px solid #cccccc;
-    padding:0.5em;
-}
-.album_object {
-    float:left;
-    border:1px solid #CCCCCC;
-    margin:4px;
-    padding:3px;
-    width:128px;
-    height:128px;
-    background-color:#fff;
-}
-.album_object .container {
-    /*float:left;*/
-    position:absolute;
-    height:128px;
-    width:128px;
-    overflow:hidden;
-}
-#TB_closeAjaxWindow { 
-    display:none;
-}
-.toolbar {
-    position:absolute;
-    background:transparent url(/media/gallery/img/toolbar_bg.png);
-    display:none;
-    width:122px;
-    height:17px;
-    margin-top:105px;
-    padding:3px;
-}
-.toolbar a {}
-.object_actions { display:none; }
-</style>
+<link rel="stylesheet" type="text/css" href="/media/gallery/css/admin.css" media="screen" />
 {% endblock %}
 
 {% block extrascript %}
@@ -87,104 +16,19 @@ ul.uploads li {
 <script src="/media/gallery/js/jquery-swfupload.js"></script>
 <script src="/media/gallery/js/thickbox.js"></script> {# TODO: Pack javascript #}
 <script src="/media/gallery/js/jquery-ui-1.7.1.custom.min.js"></script>
+
 <script>
-$(function() {
-    $("#spanButtonPlaceholder").makeSWFUploader({
-        // File Settings
-        upload_url: "/admin/gallery/album/{{ album.id }}/upload/?ssid={{ sessionid }}", 
-        file_size_limit : "10 MB",
-        file_types : "*.jpg; *.jpeg; *.png; *.tif; *.gif",
-		file_types_description : "{% trans "All Images" %}",
-		file_upload_limit : 1000,
-		file_queue_limit : 100,
-           
-        button_placeholder_id : "spanButtonPlaceholder",
-        button_width: 69,
-        button_height: 30,
-		button_text: '',
-		button_window_mode: SWFUpload.WINDOW_MODE.TRANSPARENT,
-		button_cursor: SWFUpload.CURSOR.HAND,    
-        
-		custom_settings : {
-			progressTarget : "upload-list",
-			cancelButtonId : "btnCancel"
-			},
-				
-		minimum_flash_version : "9.0.28",
-		
-		debug:false,
-		debug_handler: debug_console,
+var album_id, add, file_types_description, delete_confirm_msg, sessionid;
 
-        });
-});  
+{% if not add %}album_id = {{ album.id }};{% else %}album_id = none;
+add = true;{% endif %}
 
-// Send debug 
-function debug_console (message) {
-//    console.log(message);
-}
- 
-function reload_imgs() {
-{% if not add %}
-    $("#objectlist").load('{% url album_object_list album.id %}', function () {
-    
-	    // Initialize Thickbox
-	    tb_init('a.thickbox, area.thickbox, input.thickbox');    
-	    $(".TB_closeWindowButton").click(tb_remove);
-	    
-	    // Enable the Toolbar for the images
-        $(".album_object").hover(
-            function () {
-                $(this).children(".toolbar").css("display", "block");
-            }, 
-            function () {
-                $(this).children(".toolbar").css("display", "none");
-            });
-        $(".delete-link").click(function () {
-            if(confirm("{% trans "Are you sure you want to delete this image?" %}")) {
-                return true;
-            } else {
-                return false;
-            }
-            });
-        $(".submit_object_infos").click(function () {
-            id = $(this).parents(".object_info_form").attr("id").split("_", 1)[0];
-            url = '/admin/gallery/album/{{ album.id }}/'+id+'/';
-            post = {
-                name :      $("#id_object_"+id+"_name").val(),
-                caption :   $("#id_object_"+id+"_caption").val(),
-                preview :   $("#id_object_"+id+"_preview").val(),
-                }
-                
-            console.log($("#id_object_"+id+"_preview").val());
-            $.post(url, post, tb_remove, "html");
-            return false;
-        });
-        
-        // Make the object list sortable
-        $("#objectlist").sortable({
-            stop: function(i) {
-                $.ajax({
-                    type: "POST",
-                    url: "/admin/gallery/album/{{ album.id }}/reorder/",
-                    data: $("#objectlist").sortable("serialize")
-                });
-          },
-     });        
-        
-});    
-{% endif %}
-}
+file_types_description = "{% trans "All Images" %}";
+delete_confirm_msg = "{% trans "Are you sure you want to delete this image?" %}";
 
-$(document).ready(function () {
-    {% if not add %}reload_imgs();{% endif %}
-});
-
-var tb_remove_callback = function () {
-reload_imgs();
-$("#upload-list").empty();
-};
-
+sessionid = '{{ sessionid }}';
 </script>
+<script src="/media/gallery/js/admin.js"></script>
 
 {% endblock %}
 
@@ -220,9 +64,9 @@ $("#upload-list").empty();
 </ul>
 
 <span id="spanButtonPlaceholder"></span>
-<input id="select_files" type="button" value="{% trans "Select files" %}" style="margin-left: 0px; font-size: 8pt; height: 29px;" />
-<input id="btnCancel" type="button" value="{% trans "Cancel All Uploads" %}" disabled="disabled" style="margin-left: 2px; font-size: 8pt; height: 29px;" />
-<input id="TB_closeWindowButton" type="button" value="{% trans "Close window" %}" style="margin-left: 2px; font-size: 8pt; height: 29px;" />
+<input id="select_files" type="button" value="{% trans "Select files" %}"/>
+<input id="btnCancel" type="button" value="{% trans "Cancel All Uploads" %}" disabled="disabled" style="margin:0px 4px;"/>
+<input id="TB_closeWindowButton" type="button" value="{% trans "Close window" %}"/>
 
 </div>
 
@@ -230,6 +74,7 @@ $("#upload-list").empty();
 <div id="objectlist" class="objectlist">
 </div>
 {% endif %}
+
 </div>
 
 {% if add %}

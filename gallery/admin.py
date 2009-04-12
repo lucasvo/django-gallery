@@ -166,6 +166,7 @@ class AlbumAdmin(admin.ModelAdmin):
             album.preview = None
             album.save()
         object.delete()
+        
         return HttpResponseRedirect('../../')
         
     def album_reorder(self, request, album_id):
