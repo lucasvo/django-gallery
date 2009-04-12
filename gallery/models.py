@@ -20,6 +20,8 @@ class Album(models.Model):
     ORDERING_CHOICES = (
             ('d', _('Order by date (ascending)')),
             ('D', _('Order by date (descending)')),
+            ('n', _('Order by name (ascending)')),
+            ('N', _('Order by name (descending)')),          
             ('f', _('Order by file name (ascending)')),
             ('F', _('Order by file name (descending)')),
             ('m', _('Order manually')),
@@ -61,6 +63,10 @@ class Album(models.Model):
             objects = objects.order_by('date')
         elif self.ordering == 'D':
             objects = objects.order_by('-date')
+        elif self.ordering == 'n':
+            objects = objects.order_by('name')
+        elif self.ordering == 'N':
+            objects = objects.order_by('-name')
         elif self.ordering == 'f':
             objects = objects.order_by('original')
         elif self.ordering == 'F':

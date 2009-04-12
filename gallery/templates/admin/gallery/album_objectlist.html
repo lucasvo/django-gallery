@@ -3,14 +3,12 @@
 {% for object in  objects %}
 <div class="album_object{% ifequal object.id album.preview.id %} active{% endifequal %}" id="object_{{ object.id }}">
 <div class="container" style="width:{{ admin_image_size.1 }}px; height:{{ admin_image_size.0 }}px;">{{ object|resized_image:"admin" }}</div>
-{% comment %}
-    <a id="{{ object.id }}_delete_object" href="{{ object.id }}/delete/" class="delete_object deletelink">{% trans 'Delete' %}</a><br>
-    <a id="{{ object.id }}_set_preview" href="{{ object.id }}/set_preview/" class="set_preview_object" >{% trans 'Set as preview' %}</a>
-    <div class="object_description_container"><div id="{{ object.id }}_description" class="object_description">{% if object.description %}{{ object.description }}{% else %}<span>Edit description</span>{% endif %}</div></div>
-{% endcomment %}
 <div class="toolbar">
+    {% ifequal object.id album.preview.id %}
+        <img class="float-right" alt="{% trans "This image is the preview thumbnail of this gallery" %}" src="/media/icons/photo.png" title="{% trans "This image is the preview thumbnail of this gallery" %}" />
+    {% endifequal %}
     <a href="#TB_inline?height=450&width=400&inlineId={{ object.id }}_actions" class="thickbox" title="{{ object.name }}"><img src="/media/icons/pencil.png" alt="Edit" /></a>
-    <a href="/admin/gallery/album/{{ album.id }}/{{ object.id }}/delete/" class="delete-link"><img src="/media/icons/delete.png" alt="Delete" /></a> {{ object.id }}
+    <a href="/admin/gallery/album/{{ album.id }}/{{ object.id }}/delete/" class="delete-link"><img src="/media/icons/delete.png" alt="Delete" /></a>
 </div>
 <div class="object_actions" id="{{ object.id }}_actions">
     <h2>{% blocktrans with object.name as name %}Edit image {{ name }}{% endblocktrans %}</h2>
@@ -27,7 +25,7 @@
              </div>
 
              <div class="form-row">
-                <label class="required" for="id_object_{{ object.id }}_name">Preview</label>
+                <label class="required" for="id_object_{{ object.id }}_preview">Preview</label>
                 <input id="id_object_{{ object.id }}_preview" type="checkbox" {% ifequal object.id album.preview.id %}checked="checked"{% endifequal %} name="name"/>
              </div>
         </fieldset>

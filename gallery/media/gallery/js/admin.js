@@ -90,5 +90,5 @@ $("#upload-list").empty();
 };
 
 $(document).ready(function () {
-    if (add != true) { reload_imgs(); }
+    if (add != true) { reload_imgs(); }   
 });
