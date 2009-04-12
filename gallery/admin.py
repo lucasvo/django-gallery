@@ -78,7 +78,7 @@ class AlbumAdmin(admin.ModelAdmin):
             
     def album_objectlist(self, request, id=None):
         album = get_object_or_404(Album, pk=id)
-        objects = album.object_set.all().order_by('position')
+        objects = album.get_objects()
         
         return render_to_response('admin/gallery/album_objectlist.html', {
             'album': album,
@@ -166,6 +166,7 @@ class AlbumAdmin(admin.ModelAdmin):
             album.preview = None
             album.save()
         object.delete()
+        
         return HttpResponseRedirect('../../')
         
     def album_reorder(self, request, album_id):

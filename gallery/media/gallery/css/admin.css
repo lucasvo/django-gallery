@@ -1,0 +1,81 @@
+#upload-box { display: none; }
+
+ul.uploads { padding: 0px; }
+
+ul.uploads li
+{
+	list-style-type: none;
+	background-color: #f0f0f0;
+	margin: 4px 0;
+	padding: 7px;
+	width: 214px;
+}
+
+.progressbar
+{
+	width: 200px;
+	padding: 0;
+	border: 1px solid black;
+	height: .75em;
+	margin-bottom: 5px;
+}
+
+.progressbar div
+{
+	background-color: orange;
+	font-size: 1pt;
+	height: 100%;
+	float: left;
+	width: 0px;
+	display: block;
+}
+
+.completed .progressbar div { background-color: green; }
+
+.swfupload
+{
+	position: absolute;
+	z-index: 1;
+}
+
+.objectlist
+{
+	border: 1px solid #cccccc;
+	padding: 0.5em;
+}
+
+.album_object
+{
+	float: left;
+	border: 1px solid #CCCCCC;
+	margin: 4px;
+	padding: 3px;
+	width: 128px;
+	height: 128px;
+	background-color: #fff;
+}
+
+.album_object .container
+{
+	/*float:left;*/
+	position: absolute;
+	height: 128px;
+	width: 128px;
+	overflow: hidden;
+}
+
+#TB_closeAjaxWindow { display: none; }
+
+.toolbar
+{
+	position: absolute;
+	background: transparent url(/media/gallery/img/toolbar_bg.png);
+	display: none;
+	width: 122px;
+	height: 17px;
+	margin-top: 105px;
+	padding: 3px;
+}
+
+.toolbar a { }
+.object_actions { display: none; }

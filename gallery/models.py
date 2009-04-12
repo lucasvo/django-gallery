@@ -7,6 +7,8 @@ import datetime
 import time
 import re
 
+from django.utils.translation import ugettext as _
+
 from gallery.settings import IMAGE_SIZES, ADMIN_IMAGE_SIZE
 
 class Album(models.Model):
@@ -16,13 +18,15 @@ class Album(models.Model):
     position = models.IntegerField(default=0)
 
     ORDERING_CHOICES = (
-            ('d', 'Sort by date (ascending)'),
-            ('D', 'Sort by date (descending)'),
-            ('f', 'Sort by file name (ascending)'),
-            ('F', 'Sort by file name (descending)'),
-            ('m', 'Sort manually'),
+            ('d', _('Order by date (ascending)')),
+            ('D', _('Order by date (descending)')),
+            ('f', _('Order by file name (ascending)')),
+            ('F', _('Order by file name (descending)')),
+            ('m', _('Order manually')),
         )
-    ordering = models.CharField(max_length=1, choices=ORDERING_CHOICES, default='d')
+    ordering = models.CharField(max_length=1, choices=ORDERING_CHOICES, default='d', 
+        help_text=_('''If you select manual ordering, you can reorder the images below by using drag 
+        and drop to move them around. To enable manual ordering be sure to save the changes first.'''))
 
     preview = models.ForeignKey('Object', null=True, blank=True, related_name='preview')
 
@@ -50,21 +54,19 @@ class Album(models.Model):
     def number_of_objects(self):
         return self.object_set.count()
 
-    def reorder_objects(self):
-        pass
-    # TODO
-    #    objects = self.object_set.all()
-    #    objects = objects.order_by('name')
-    #    for n, object in enumerate(objects):
-    #        object.position = n+1
-    #        object.save()
-
     def get_objects(self):
+        """Fetches album objects and orders them according to the gallery setting"""
         objects = self.object_set.all()
-
-        if objects.filter(position=0):
-            self.reorder_objects()
-
+        if self.ordering == 'd':
+            objects = objects.order_by('date')
+        elif self.ordering == 'D':
+            objects = objects.order_by('-date')
+        elif self.ordering == 'f':
+            objects = objects.order_by('original')
+        elif self.ordering == 'F':
+            objects = objects.order_by('-original')
+        elif self.ordering == 'm':
+            objecs = objects.order_by('position')
         return objects
 
     def delete(self):
