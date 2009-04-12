@@ -2,6 +2,7 @@
 
 # Image sizes to generate automatically. Must be sorted.
 IMAGE_SIZES = (
+        (128, 128),
         (192, 192),
         (256, 256),
         (800, 800),

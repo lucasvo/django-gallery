@@ -1,11 +1,42 @@
 {% load i18n adminmedia gallery_extras %}
-{% if album.object_set.all %}
-{% for object in  album.object_set.all %}
-<div class="album_object{% ifequal object.id album.preview.id %} active{% endifequal %}">
-<div class="container" style="width:{{ admin_image_size.0 }}px; height:{{ admin_image_size.1 }}px;">{{ object|resized_image:"admin" }}</div>
-<a id="{{ object.id }}_delete_object" href="{{ object.id }}/delete/" class="delete_object deletelink">{% trans 'Delete' %}</a><br>
-<a id="{{ object.id }}_set_preview" href="{{ object.id }}/set_preview/" class="set_preview_object" >{% trans 'Set as preview' %}</a>
-<div class="object_description_container"><div id="{{ object.id }}_description" class="object_description">{% if object.description %}{{ object.description }}{% else %}<span>Edit description</span>{% endif %}</div></div>
+{% if objects %}
+{% for object in  objects %}
+<div class="album_object{% ifequal object.id album.preview.id %} active{% endifequal %}" id="object_{{ object.id }}">
+<div class="container" style="width:{{ admin_image_size.1 }}px; height:{{ admin_image_size.0 }}px;">{{ object|resized_image:"admin" }}</div>
+{% comment %}
+    <a id="{{ object.id }}_delete_object" href="{{ object.id }}/delete/" class="delete_object deletelink">{% trans 'Delete' %}</a><br>
+    <a id="{{ object.id }}_set_preview" href="{{ object.id }}/set_preview/" class="set_preview_object" >{% trans 'Set as preview' %}</a>
+    <div class="object_description_container"><div id="{{ object.id }}_description" class="object_description">{% if object.description %}{{ object.description }}{% else %}<span>Edit description</span>{% endif %}</div></div>
+{% endcomment %}
+<div class="toolbar">
+    <a href="#TB_inline?height=450&width=400&inlineId={{ object.id }}_actions" class="thickbox" title="{{ object.name }}"><img src="/media/icons/pencil.png" alt="Edit" /></a>
+    <a href="/admin/gallery/album/{{ album.id }}/{{ object.id }}/delete/" class="delete-link"><img src="/media/icons/delete.png" alt="Delete" /></a> {{ object.id }}
+</div>
+<div class="object_actions" id="{{ object.id }}_actions">
+    <h2>{% blocktrans with object.name as name %}Edit image {{ name }}{% endblocktrans %}</h2>
+    <div id="{{ object.id }}_info_form" class="object_info_form">
+        <fieldset class="module aligned">
+             <div class="form-row">
+                <label class="required" for="id_object_{{ object.id }}_name">Name</label>
+                <input id="id_object_{{ object.id }}_name" type="text" maxlength="200" value="{{ object.name }}" name="name"/>
+             </div>
+         
+             <div class="form-row">
+                <label class="required" for="id_object_{{ object.id }}_description">Caption</label>
+                <textarea id="id_object_{{ object.id }}_caption" type="text" maxlength="200" name="caption">{% if object.caption %}{{ object.caption }}{% endif %}</textarea>
+             </div>
+
+             <div class="form-row">
+                <label class="required" for="id_object_{{ object.id }}_name">Preview</label>
+                <input id="id_object_{{ object.id }}_preview" type="checkbox" {% ifequal object.id album.preview.id %}checked="checked"{% endifequal %} name="name"/>
+             </div>
+        </fieldset>
+        <div class="submit-row">
+            <input class="TB_closeWindowButton float-left" type="button" value="{% trans "Close window" %}" />
+            <input type="button" class="default submit_object_infos" id="submit_object_infos_{{ object.id }}" value="Save all changes" />
+        </div>
+     </div>
+</div>
 </div>
 {% endfor %}
 {% else %}

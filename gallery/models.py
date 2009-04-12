@@ -7,7 +7,7 @@ import datetime
 import time
 import re
 
-from gallery.config import IMAGE_SIZES, ADMIN_IMAGE_SIZE
+from gallery.settings import IMAGE_SIZES, ADMIN_IMAGE_SIZE
 
 class Album(models.Model):
     name = models.CharField(max_length=200)
@@ -51,11 +51,13 @@ class Album(models.Model):
         return self.object_set.count()
 
     def reorder_objects(self):
-        objects = self.object_set.all()
-        objects = objects.order_by('name')
-        for n, object in enumerate(objects):
-            object.position = n+1
-            object.save()
+        pass
+    # TODO
+    #    objects = self.object_set.all()
+    #    objects = objects.order_by('name')
+    #    for n, object in enumerate(objects):
+    #        object.position = n+1
+    #        object.save()
 
     def get_objects(self):
         objects = self.object_set.all()
@@ -84,7 +86,7 @@ class Object(models.Model):
     type = models.CharField(max_length=1, choices=TYPE_CHOICES)
 
     name = models.CharField(max_length=200)
-    description = models.TextField(blank=True, null=True)
+    caption = models.TextField(blank=True, null=True)
     
     original = models.FileField(upload_to='gallery/originals/', null=True, blank=True, max_length=255)
 
@@ -158,7 +160,6 @@ class Object(models.Model):
                 date = exif[36867]
             except:
                 date = exif[306]
-            #print 'exif', date
             if date:
                 # from http://snippets.dzone.com/posts/show/4089
                 date = datetime.datetime(*(time.strptime(date, "%Y:%m:%d %H:%M:%S")[0:6]))

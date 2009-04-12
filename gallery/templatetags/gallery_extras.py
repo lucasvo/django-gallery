@@ -33,6 +33,7 @@ def resized_image(object, size=None):
         size = size[:-1]
         f = max
     int_size = get_size(size)
+    
     w, h = calculate_size(object.get_size(), int_size, f)
     return mark_safe('<img src="%s" width="%d" height="%d" alt="%s">' % (
             resized_url(object, size),

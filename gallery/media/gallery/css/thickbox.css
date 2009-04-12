@@ -34,7 +34,7 @@
 	width:100%;
 }
 
-.TB_overlayMacFFBGHack {background: url(/media/gallery/macFFBgHack.png) repeat;}
+.TB_overlayMacFFBGHack {background: url(/media/gallery/img/macFFBgHack.png) repeat;}
 .TB_overlayBG {
 	background-color:#000;
 	filter:alpha(opacity=75);

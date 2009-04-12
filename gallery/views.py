@@ -174,7 +174,7 @@ def get_file_url(filename, size):
     return settings.MEDIA_URL+'/'.join(['gallery', dirname, filename])
 
 
-def calculate_size(size, boundaries, f=min):
+def calculate_size(size, boundaries, f=max):
     ratio = size[0] / float(size[1])
     scale = f(float(boundaries[0])/size[0], float(boundaries[1])/size[1])
     if scale > 1:
@@ -209,7 +209,7 @@ def generate_thumbnail(request, album_id, object_id, w, h):
     object.set_size(image.size)
 
     size = calculate_size(image.size, boundaries)
-
+    
     if image.mode not in ('L', 'RGBA'):
         image = image.convert('RGBA')
 
