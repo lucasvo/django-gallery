@@ -23,6 +23,7 @@ var album_id, add, file_types_description, delete_confirm_msg, sessionid;
 {% if not add %}album_id = {{ album.id }};{% else %}album_id = none;
 add = true;{% endif %}
 
+{# Todo: Use i18n.js for this #}
 file_types_description = "{% trans "All Images" %}";
 delete_confirm_msg = "{% trans "Are you sure you want to delete this image?" %}";
 

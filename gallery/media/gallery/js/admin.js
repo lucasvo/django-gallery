@@ -29,6 +29,22 @@ $(function() {
 });  
 }
 
+function load_sortable () {
+// This function checks whether manual ordering is selected and enables/disables sorting.
+if ($("#id_ordering").val() == "m") {
+        // Make the object list sortable
+        $("#objectlist").sortable({
+            stop: function(i) {
+                $.ajax({
+                    type: "POST",
+                    url: '/admin/gallery/album/'+album_id+'/reorder/',
+                    data: $("#objectlist").sortable("serialize")
+                });
+          },
+        });      
+}
+}
+
 function reload_imgs() {
     $("#objectlist").load('/admin/gallery/album/'+album_id+'/objectlist/', function () {
     
@@ -64,19 +80,8 @@ function reload_imgs() {
             $.post(url, post, tb_remove, "html");
             return false;
         });
-        
-        // Make the object list sortable
-        $("#objectlist").sortable({
-            stop: function(i) {
-                $.ajax({
-                    type: "POST",
-                    url: '/admin/gallery/album/'+album_id+'/reorder/',
-                    data: $("#objectlist").sortable("serialize")
-                });
-          },
-     });        
-        
-});    
+        load_sortable();
+    });    
 }
 
 var tb_remove_callback = function () {
